@@ -6,7 +6,7 @@ import it.entefire.squola.entities.Course
 import it.entefire.squola.entities.CourseEdition
 
 fun Course.toCourseDTO(): CourseDTO {
-    return CourseDTO(this.id,this.title,this.numHours,this.cost,
+    return CourseDTO(this.id,this.title,this.numHours,this.description,this.cost,
         this.editions.map { it.toCourseEditionDTO() }.toMutableSet())
 }
 
