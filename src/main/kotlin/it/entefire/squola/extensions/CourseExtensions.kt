@@ -11,5 +11,5 @@ fun Course.toCourseDTO(): CourseDTO {
 }
 
 fun CourseEdition.toCourseEditionDTO(): CourseEditionDTO {
-    return CourseEditionDTO(this.id,this.code,this.start,this.end,this.course.id,this.course.title)
+    return CourseEditionDTO(this.id,this.code,this.start,this.end,this.course!!.id,this.course!!.title)
 }

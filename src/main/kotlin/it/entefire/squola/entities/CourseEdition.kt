@@ -7,5 +7,5 @@ import javax.persistence.ManyToOne
 
 @Entity
 class CourseEdition(@Id var id: Long, var code: String, var start: LocalDate, var end: LocalDate,
-                    @ManyToOne var course: Course) {
+                    @ManyToOne var course: Course?) {
 }

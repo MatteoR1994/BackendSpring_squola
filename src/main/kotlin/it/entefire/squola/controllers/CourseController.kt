@@ -4,6 +4,8 @@ import it.entefire.squola.dtos.CourseDTO
 import it.entefire.squola.dtos.CourseEditionDTO
 import it.entefire.squola.entities.Course
 import it.entefire.squola.extensions.toCourseDTO
+import it.entefire.squola.extensions.toCourseEditionDTO
+import it.entefire.squola.repositories.CourseEditionsRepository
 import it.entefire.squola.repositories.CourseRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
@@ -15,6 +17,9 @@ import org.springframework.web.bind.annotation.*
 class CourseController {
     @Autowired
     lateinit var courseRepo: CourseRepository
+
+    @Autowired
+    lateinit var courseEditionsRepo: CourseEditionsRepository
 
     @GetMapping("/")
     fun allCourses(): ResponseEntity<MutableIterable<CourseDTO>> {
@@ -52,5 +57,40 @@ class CourseController {
         }
         val result = courseRepo.save(cDTO.toCourse())
         return ResponseEntity(result.toCourseDTO(),HttpStatus.OK)
+    }
+
+    @GetMapping("/{id}")
+    fun findCourseById(@PathVariable id: Long): ResponseEntity<CourseDTO> {
+        val courseOptional = courseRepo.findById(id)
+        if(!courseOptional.isPresent) {
+            return ResponseEntity(HttpStatus.NOT_FOUND)
+        }
+        val course = courseOptional.get()
+        return ResponseEntity(course.toCourseDTO(),HttpStatus.OK)
+    }
+
+    @GetMapping("/{id}/editions")
+    fun getEditionsByCourseId(@PathVariable id: Long): ResponseEntity<MutableSet<CourseEditionDTO>> {
+        val courseOptional = courseRepo.findById(id)
+        if(!courseOptional.isPresent) {
+            return ResponseEntity(HttpStatus.NOT_FOUND)
+        }
+        val course = courseOptional.get()
+        val editions = course.editions
+        return ResponseEntity(editions.map { it.toCourseEditionDTO() }
+            .toMutableSet(),HttpStatus.OK)
+    }
+
+    @PostMapping("/{id}/editions")
+    fun addCourseEdition(@RequestBody ceDTO: CourseEditionDTO, @PathVariable id: Long): ResponseEntity<CourseEditionDTO> {
+        val courseOptional = courseRepo.findById(id)
+        if(!courseOptional.isPresent) {
+            return ResponseEntity(HttpStatus.NOT_FOUND)
+        }
+        val course = courseOptional.get()
+        val edition = ceDTO.toEdition()
+        edition.course = course
+        courseEditionsRepo.save(edition)
+        return ResponseEntity(edition.toCourseEditionDTO(),HttpStatus.CREATED)
     }
 }
