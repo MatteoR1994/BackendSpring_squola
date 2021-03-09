@@ -7,6 +7,7 @@ import it.entefire.squola.extensions.toCourseDTO
 import it.entefire.squola.extensions.toCourseEditionDTO
 import it.entefire.squola.repositories.CourseEditionsRepository
 import it.entefire.squola.repositories.CourseRepository
+import it.entefire.squola.services.abstractions.CourseService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -17,6 +18,9 @@ import org.springframework.web.bind.annotation.*
 class CourseController {
     @Autowired
     lateinit var courseRepo: CourseRepository
+
+    @Autowired
+    lateinit var courseService: CourseService
 
     @Autowired
     lateinit var courseEditionsRepo: CourseEditionsRepository
@@ -90,7 +94,7 @@ class CourseController {
         val course = courseOptional.get()
         val edition = ceDTO.toEdition()
         edition.course = course
-        courseEditionsRepo.save(edition)
-        return ResponseEntity(edition.toCourseEditionDTO(),HttpStatus.CREATED)
+        val saved = courseService.saveCourseEdition(edition)
+        return ResponseEntity(saved.toCourseEditionDTO(),HttpStatus.CREATED)
     }
 }
